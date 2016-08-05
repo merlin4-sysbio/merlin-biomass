@@ -1,0 +1,14 @@
+/cache
+/.classpath
+/.project
+/cache.ccf
+*.log
+
+
+#eclipse
+.settings
+
+#build folders
+/target
+/test-bin
+/test_bin/
