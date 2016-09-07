@@ -2,9 +2,6 @@ package pt.uminho.sysbio;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,7 +85,7 @@ public class Utilities {
 
 			buf.close();
 
-		}catch(Exception e){
+		}catch(Exception e) {
 
 			e.printStackTrace();
 		}
@@ -136,31 +133,6 @@ public class Utilities {
 				return bm;
 
 		return null;
-	}
-	
-	/**
-	 * Add biomass compound to model.
-	 * 
-	 * @param bm
-	 * @param statement
-	 * @return
-	 * @throws SQLException 
-	 */
-	public static BiomassMetabolite insertCompoundToDatabase(BiomassMetabolite bm, Statement statement) throws SQLException {
-
-
-		ResultSet rs = statement.executeQuery("SELECT * FROM compound WHERE name = '"+bm.getName()+"'");
-
-		if(!rs.next()) {
-
-			statement.execute("INSERT INTO compound (name, kegg_id, entry_type, molecular_weight, hasBiologicalRoles) VALUES ('"+bm.getName()+"','"+bm.getName()+"','BIOMASS','"+bm.getMolecularWeight()+"',TRUE);");
-			rs = statement.executeQuery("SELECT * FROM compound WHERE name = '"+bm.getName()+"'");
-			rs.next();
-		}
-		bm.setModelId(rs.getString(1));
-		rs.close();
-
-		return bm;
 	}
 
 }

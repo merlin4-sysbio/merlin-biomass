@@ -21,6 +21,7 @@ public class Enumerators {
 		AA,
 		DNA,
 		RNA,
-		OTHER
+		OTHER,
+		COFACTOR
 	}
 }

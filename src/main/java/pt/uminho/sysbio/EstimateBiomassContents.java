@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.biojava3.core.sequence.DNASequence;
-import org.biojava3.core.sequence.ProteinSequence;
-import org.biojava3.core.sequence.RNASequence;
-import org.biojava3.core.sequence.compound.AminoAcidCompound;
-import org.biojava3.core.sequence.compound.NucleotideCompound;
-import org.biojava3.core.sequence.io.FastaReaderHelper;
-import org.biojava3.core.sequence.template.AbstractSequence;
+import org.biojava.nbio.core.sequence.DNASequence;
+import org.biojava.nbio.core.sequence.ProteinSequence;
+import org.biojava.nbio.core.sequence.RNASequence;
+import org.biojava.nbio.core.sequence.compound.AminoAcidCompound;
+import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
+import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
+import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,70 +52,81 @@ public class EstimateBiomassContents {
 
 		Map<BiomassMetabolite, Double> nucGeneData = null, nucG_MolMacromolecule = new HashMap<>(), nucGG_Content = new HashMap<>(), nucMmol_gMacromolecule_Content = new HashMap<>(), nucMmol_gDW_Content = new HashMap<>();
 
-		nucGeneData = EstimateBiomassContents.processNucleotides(nucleotideSequencesFilePath, biomassMetabolites, rna);
+		if(nucleotideSequencesFilePath == null) {
 
-		double averageNucleotideMW = 0;
-		//Remove water from polymerization
-		BiomassMetabolite ppi = biomassMetabolites.get("PPI");
-		
-		for(BiomassMetabolite nuc : nucGeneData.keySet()) {
-
-			if(nucGeneData.get(nuc)>0) {
-
-				//Remove ppi for polymerization
-				double nucMW = nuc.getMolecularWeight() - ppi.getMolecularWeight();
-				
-				double nucMassContent = nucGeneData.get(nuc)*nucMW;
-
-				nucG_MolMacromolecule.put(nuc, nucMassContent);
-				averageNucleotideMW+=nucMassContent;
-			}
-		}
-		
-		//add ppi to equation
-		nucG_MolMacromolecule.put(ppi, -ppi.getMolecularWeight());
-		
-		//add macromolecule to list
-		String name = "e-DNA";
-		if(rna)
-			name = "e-RNA";
-		BiomassMetabolite eNuc = new BiomassMetabolite("N", "", name, MetaboliteGroups.OTHER+"");
-		eNuc.setMolecularWeight(averageNucleotideMW);
-		nucG_MolMacromolecule.put(eNuc, -averageNucleotideMW);
-				
-		
-		for(BiomassMetabolite nuc : nucG_MolMacromolecule.keySet())
-			nucGG_Content.put(nuc, nucG_MolMacromolecule.get(nuc)/averageNucleotideMW);
-
-		for(BiomassMetabolite nuc : nucGG_Content.keySet())
-			nucMmol_gMacromolecule_Content.put(nuc, (nucGG_Content.get(nuc) * 1000)/nuc.getMolecularWeight());
-
-		for(BiomassMetabolite nuc : nucMmol_gMacromolecule_Content.keySet())
-			nucMmol_gDW_Content.put(nuc, (nucMmol_gMacromolecule_Content.get(nuc) * nucCellContent));
-
-		if(exportFilePath != null) {
-
-			String out = "mol/mol\n";
-			out += MapUtils.prettyToString(nucG_MolMacromolecule);
-			out += "g/gMacromolecule\n";
-			out += MapUtils.prettyToString(nucGG_Content);
-			out += "mmol/gMacromolecule\n";
-			out += MapUtils.prettyToString(nucMmol_gMacromolecule_Content);
-			out += "\nmmol/gDW\n";
-			out += MapUtils.prettyToString(nucMmol_gDW_Content);
-
-			logger.debug("\n"+out);
-
-			PrintWriter writer = new PrintWriter(exportFilePath, "UTF-8");
-			writer.println(out);
-			writer.close();
-		}
-
-
-		if(retType.equals(ReturnType.MMol_GMacromolecule))
+			String name = "e-DNA";
+			if(rna)
+				name = "e-RNA";
+			BiomassMetabolite eNuc = new BiomassMetabolite("N", "", name, MetaboliteGroups.OTHER+"");
+			nucMmol_gMacromolecule_Content.put(eNuc, -1.0);
 			return nucMmol_gMacromolecule_Content;
-		else if(retType.equals(ReturnType.MMol_GDW)) 
-			return nucMmol_gDW_Content;
+		}
+		else {
+
+			nucGeneData = EstimateBiomassContents.processNucleotides(nucleotideSequencesFilePath, biomassMetabolites, rna);
+
+			double averageNucleotideMW = 0;
+			//Remove water from polymerization
+			BiomassMetabolite ppi = biomassMetabolites.get("PPI");
+
+			for(BiomassMetabolite nuc : nucGeneData.keySet()) {
+
+				if(nucGeneData.get(nuc)>0) {
+
+					//Remove ppi for polymerization
+					double nucMW = nuc.getMolecularWeight() - ppi.getMolecularWeight();
+
+					double nucMassContent = nucGeneData.get(nuc)*nucMW;
+
+					nucG_MolMacromolecule.put(nuc, nucMassContent);
+					averageNucleotideMW+=nucMassContent;
+				}
+			}
+
+			//add ppi to equation
+			nucG_MolMacromolecule.put(ppi, -ppi.getMolecularWeight());
+
+			//add macromolecule to list
+			String name = "e-DNA";
+			if(rna)
+				name = "e-RNA";
+			BiomassMetabolite eNuc = new BiomassMetabolite("N", "", name, MetaboliteGroups.OTHER+"");
+			eNuc.setMolecularWeight(averageNucleotideMW);
+			nucG_MolMacromolecule.put(eNuc, -averageNucleotideMW);
+
+
+			for(BiomassMetabolite nuc : nucG_MolMacromolecule.keySet())
+				nucGG_Content.put(nuc, nucG_MolMacromolecule.get(nuc)/averageNucleotideMW);
+
+			for(BiomassMetabolite nuc : nucGG_Content.keySet())
+				nucMmol_gMacromolecule_Content.put(nuc, (nucGG_Content.get(nuc) * 1000)/nuc.getMolecularWeight());
+
+			for(BiomassMetabolite nuc : nucMmol_gMacromolecule_Content.keySet())
+				nucMmol_gDW_Content.put(nuc, (nucMmol_gMacromolecule_Content.get(nuc) * nucCellContent));
+
+			if(exportFilePath != null) {
+
+				String out = "mol/mol\n";
+				out += MapUtils.prettyToString(nucG_MolMacromolecule);
+				out += "g/gMacromolecule\n";
+				out += MapUtils.prettyToString(nucGG_Content);
+				out += "mmol/gMacromolecule\n";
+				out += MapUtils.prettyToString(nucMmol_gMacromolecule_Content);
+				out += "\nmmol/gDW\n";
+				out += MapUtils.prettyToString(nucMmol_gDW_Content);
+
+				logger.debug("\n"+out);
+
+				PrintWriter writer = new PrintWriter(exportFilePath, "UTF-8");
+				writer.println(out);
+				writer.close();
+			}
+
+			if(retType.equals(ReturnType.MMol_GMacromolecule))
+				return nucMmol_gMacromolecule_Content;
+			else if(retType.equals(ReturnType.MMol_GDW)) 
+				return nucMmol_gDW_Content;
+		}
 
 		return null;
 	}
@@ -139,9 +150,9 @@ public class EstimateBiomassContents {
 		MetaboliteGroups metaboliteGroup = MetaboliteGroups.DNA;
 		if(rna)
 			metaboliteGroup = MetaboliteGroups.RNA;
-		
+
 		for(String sequence : sequencesDNA.keySet()) {
-			
+
 			AbstractSequence<NucleotideCompound> nucSequence = sequencesDNA.get(sequence);
 			if(rna)
 				nucSequence = new RNASequence(nucSequence.getSequenceAsString().replaceAll("T", "U"));
@@ -149,7 +160,7 @@ public class EstimateBiomassContents {
 			List<NucleotideCompound> nucComp = nucSequence.getCompoundSet().getAllCompounds();
 
 			for (NucleotideCompound nuc : nucComp) {
-				
+
 				BiomassMetabolite nuc_id = null;
 
 				for(String name : biomassMetabolites.keySet()) {
@@ -159,14 +170,14 @@ public class EstimateBiomassContents {
 					if(bm.getSingleLetter().equals(nuc.getBase()) && bm.getGroup().equalsIgnoreCase(metaboliteGroup.toString()))
 						nuc_id = bm;
 				}
-				
+
 				if(nuc_id!= null)
 					nucBaseFrequencyMap.put(nuc_id,  new Double(nucSequence.countCompounds(nuc)));
 			}
 		}
-		
+
 		logger.debug("nuc Bases frequency map {}", nucBaseFrequencyMap);
-		
+
 		return EstimateBiomassContents.getRelativeFrequency(nucBaseFrequencyMap);
 	}
 
@@ -191,77 +202,81 @@ public class EstimateBiomassContents {
 		Map<BiomassMetabolite, Double> aaMolMolContent = null, aaG_MolMacromolecule = new HashMap<>(), aaGG_Content = new HashMap<>(), 
 				aaMmol_gMacromolecule_Content = new HashMap<>(), aaMmol_gDW_Content = new HashMap<>();
 
-		if (geneData==null || geneData.trim().isEmpty())
-			aaMolMolContent = processProteins(aaSequencesFilePath, biomassMetabolites);
-		else
-			aaMolMolContent = EstimateBiomassContents.processProteinsExpressionData(aaSequencesFilePath, biomassMetabolites, geneData, separator);
+		if(aaSequencesFilePath == null) {
 
-		double averageProteinMW = 0;
-		//Remove water from polymerization
-		BiomassMetabolite h2o = biomassMetabolites.get("H2O");
-		
-		for(BiomassMetabolite aa : aaMolMolContent.keySet()) {
-
-			if(aaMolMolContent.get(aa)>0) {
-				
-				//Remove water from polymerization
-				double aaMW = aa.getMolecularWeight() - h2o.getMolecularWeight();
-				
-//				logger.debug(aa.getName()+" "+aa.getMolecularWeight());
-//				logger.debug(h2o.getName()+" "+h2o.getMolecularWeight());
-//				logger.info("");
-				
-				double aaMassContent = aaMolMolContent.get(aa)*aaMW;
-
-				aaG_MolMacromolecule.put(aa, aaMassContent);
-				averageProteinMW+=aaMassContent;
-			}
+			BiomassMetabolite eProtein = new BiomassMetabolite("P", "", "e-Protein", MetaboliteGroups.OTHER+"");
+			aaMmol_gMacromolecule_Content.put(eProtein, -1.0);
+			return aaMmol_gMacromolecule_Content;
 		}
-		
-		//add water to equation
-		aaG_MolMacromolecule.put(h2o, -h2o.getMolecularWeight());
-		//add macromolecule to list
-		BiomassMetabolite eProtein = new BiomassMetabolite("P", "", "e-Protein", MetaboliteGroups.OTHER+"");
-		eProtein.setMolecularWeight(averageProteinMW);
-		aaG_MolMacromolecule.put(eProtein, -averageProteinMW);
-		
-		
-		for(BiomassMetabolite aa : aaG_MolMacromolecule.keySet())
-			aaGG_Content.put(aa, aaG_MolMacromolecule.get(aa)/averageProteinMW);
+		else {
 
-		for(BiomassMetabolite aa : aaGG_Content.keySet())			
-			aaMmol_gMacromolecule_Content.put(aa, (aaGG_Content.get(aa) * 1000)/aa.getMolecularWeight());
+			if (geneData==null || geneData.trim().isEmpty())
+				aaMolMolContent = processProteins(aaSequencesFilePath, biomassMetabolites);
+			else
+				aaMolMolContent = EstimateBiomassContents.processProteinsExpressionData(aaSequencesFilePath, biomassMetabolites, geneData, separator);
 
-		for(BiomassMetabolite aa : aaGG_Content.keySet())
+			double averageProteinMW = 0;
+			//Remove water from polymerization
+			BiomassMetabolite h2o = biomassMetabolites.get("H2O");
+
+			for(BiomassMetabolite aa : aaMolMolContent.keySet()) {
+
+				if(aaMolMolContent.get(aa)>0) {
+					
+					//Remove water from polymerization
+					double aaMW = aa.getMolecularWeight() - h2o.getMolecularWeight();
+
+					//				logger.debug(aa.getName()+" "+aa.getMolecularWeight());
+					//				logger.debug(h2o.getName()+" "+h2o.getMolecularWeight());
+					//				logger.info("");
+
+					double aaMassContent = aaMolMolContent.get(aa)*aaMW;
+
+					aaG_MolMacromolecule.put(aa, aaMassContent);
+					averageProteinMW+=aaMassContent;
+				}
+			}
+
+			//add water to equation
+			aaG_MolMacromolecule.put(h2o, -h2o.getMolecularWeight());
+			//add macromolecule to list
+			BiomassMetabolite eProtein = new BiomassMetabolite("P", "", "e-Protein", MetaboliteGroups.OTHER+"");
+			eProtein.setMolecularWeight(averageProteinMW);
+			aaG_MolMacromolecule.put(eProtein, -averageProteinMW);
+
+			for(BiomassMetabolite aa : aaG_MolMacromolecule.keySet())
+				aaGG_Content.put(aa, aaG_MolMacromolecule.get(aa)/averageProteinMW);
+
+			for(BiomassMetabolite aa : aaGG_Content.keySet())			
+				aaMmol_gMacromolecule_Content.put(aa, (aaGG_Content.get(aa) * 1000)/aa.getMolecularWeight());
+
+			for(BiomassMetabolite aa : aaGG_Content.keySet())
 				aaMmol_gDW_Content.put(aa, (aaMmol_gMacromolecule_Content.get(aa) * proteinCellContent));
 
+			if(exportFilePath != null) {
 
-		if(exportFilePath != null) {
+				String out = "mol/mol\n";
+				out += MapUtils.prettyToString(aaMolMolContent);
+				out += "g/gMacromolecule\n";
+				out += MapUtils.prettyToString(aaGG_Content);
+				out += "mmol/gMacromolecule\n";
+				out += MapUtils.prettyToString(aaMmol_gMacromolecule_Content);
+				out += "\nmmol/gDW\n";
+				out += MapUtils.prettyToString(aaMmol_gDW_Content);
 
-			String out = "mol/mol\n";
-			out += MapUtils.prettyToString(aaMolMolContent);
-			out += "g/gMacromolecule\n";
-			out += MapUtils.prettyToString(aaGG_Content);
-			out += "mmol/gMacromolecule\n";
-			out += MapUtils.prettyToString(aaMmol_gMacromolecule_Content);
-			out += "\nmmol/gDW\n";
-			out += MapUtils.prettyToString(aaMmol_gDW_Content);
+				logger.debug("\n"+out);
 
-			logger.debug("\n"+out);
+				PrintWriter writer = new PrintWriter(exportFilePath, "UTF-8");
+				writer.println(out);
+				writer.close();
+			}
 
-			PrintWriter writer = new PrintWriter(exportFilePath, "UTF-8");
-			writer.println(out);
-			writer.close();
+			if(retType.equals(ReturnType.MMol_GMacromolecule))
+				return aaMmol_gMacromolecule_Content;
+			else if(retType.equals(ReturnType.MMol_GDW)) 
+				return aaMmol_gDW_Content;
 		}
-
-
-		if(retType.equals(ReturnType.MMol_GMacromolecule))
-			return aaMmol_gMacromolecule_Content;
-		else if(retType.equals(ReturnType.MMol_GDW)) 
-			return aaMmol_gDW_Content;
-
 		return null;
-
 	}
 
 	/**
@@ -277,7 +292,6 @@ public class EstimateBiomassContents {
 
 		return processProteinsExpressionData(aaSequencesFilePath, biomassMetabolites, null, null);
 	}
-
 
 	/**
 	 * Process proteins with expression data.
@@ -329,7 +343,7 @@ public class EstimateBiomassContents {
 				}
 
 				if(aa_id!= null) {
-					
+
 					if (!aaBaseFrequencyMap.containsKey(aa_id))
 						aaBaseFrequencyMap.put(aa_id, 0.0);
 
@@ -355,7 +369,7 @@ public class EstimateBiomassContents {
 		double totalFrequency = 0;
 		for (double frequency : baseFrequencyMap.values())
 			totalFrequency+=frequency;
-		
+
 		Map<BiomassMetabolite, Double> basesRelativeFrequency = new HashMap<> ();
 
 		for (BiomassMetabolite aa : baseFrequencyMap.keySet()) {
@@ -363,7 +377,7 @@ public class EstimateBiomassContents {
 			double frequency = baseFrequencyMap.get(aa);
 			basesRelativeFrequency.put(aa, (frequency / totalFrequency));
 		}
-		
+
 		return basesRelativeFrequency;		
 	}
 
@@ -407,6 +421,26 @@ public class EstimateBiomassContents {
 			e.printStackTrace();
 		}
 		return geneData;
+	}
+
+	/**
+	 * Get cofactors abundance.
+	 * 
+	 * @param biomassMetabolites
+	 * @return
+	 */
+	public static Map<BiomassMetabolite, Double> getCofactoresAbundance(Map<String, BiomassMetabolite> biomassMetabolites) {
+
+		Map<BiomassMetabolite, Double> ret = new HashMap<BiomassMetabolite, Double>();
+
+		for(String key : biomassMetabolites.keySet()) {
+
+			BiomassMetabolite biomassMetabolite = biomassMetabolites.get(key);
+			if(biomassMetabolite.getGroup().equalsIgnoreCase(MetaboliteGroups.COFACTOR.toString()))
+				ret.put(biomassMetabolite, 0.000001);
+		}
+
+		return ret;
 	}
 
 }
