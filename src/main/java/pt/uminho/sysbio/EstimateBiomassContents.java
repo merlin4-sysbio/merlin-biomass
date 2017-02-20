@@ -229,29 +229,57 @@ public class EstimateBiomassContents {
 					//				logger.debug(aa.getName()+" "+aa.getMolecularWeight());
 					//				logger.debug(h2o.getName()+" "+h2o.getMolecularWeight());
 					//				logger.info("");
-
+					
 					double aaMassContent = aaMolMolContent.get(aa)*aaMW;
 
 					aaG_MolMacromolecule.put(aa, aaMassContent);
 					averageProteinMW+=aaMassContent;
 				}
 			}
+			
+			//System.out.println("averageProteinMW "+averageProteinMW);
 
 			//add water to equation
 			aaG_MolMacromolecule.put(h2o, -h2o.getMolecularWeight());
 			//add macromolecule to list
 			BiomassMetabolite eProtein = new BiomassMetabolite("P", "", "e-Protein", MetaboliteGroups.OTHER+"");
 			eProtein.setMolecularWeight(averageProteinMW);
-			aaG_MolMacromolecule.put(eProtein, -averageProteinMW);
+			aaG_MolMacromolecule.put(eProtein, -1*averageProteinMW);
 
 			for(BiomassMetabolite aa : aaG_MolMacromolecule.keySet())
 				aaGG_Content.put(aa, aaG_MolMacromolecule.get(aa)/averageProteinMW);
 
-			for(BiomassMetabolite aa : aaGG_Content.keySet())			
-				aaMmol_gMacromolecule_Content.put(aa, (aaGG_Content.get(aa) * 1000)/aa.getMolecularWeight());
+			for(BiomassMetabolite aa : aaGG_Content.keySet()) {
+				
+				boolean notAvailable = true;
+				
+				double stoichiometry = (aaGG_Content.get(aa) * 1000)/aa.getMolecularWeight();
+				//aaMmol_gMacromolecule_Content.put(aa, stoichiometry);
+				
+				for(BiomassMetabolite biomassMetabolite : biomassMetabolites.values()) {
+					
+					if(biomassMetabolite.getSingleLetter().equals(aa.getSingleLetter()+"r") && biomassMetabolite.getGroup().equals(aa.getGroup())) {
+						
+						notAvailable = false;
+						aaMmol_gMacromolecule_Content.put(biomassMetabolite, stoichiometry);
+					}				
+				
+					if(biomassMetabolite.getSingleLetter().equals(aa.getSingleLetter()+"p") && biomassMetabolite.getGroup().equals(aa.getGroup())) {
+						
+						notAvailable = false;
+						aaMmol_gMacromolecule_Content.put(biomassMetabolite, -stoichiometry);
+					}
+				}
+				
+				if(notAvailable) 
+					aaMmol_gMacromolecule_Content.put(aa, stoichiometry);
+			}
 
-			for(BiomassMetabolite aa : aaGG_Content.keySet())
-				aaMmol_gDW_Content.put(aa, (aaMmol_gMacromolecule_Content.get(aa) * proteinCellContent));
+			for(BiomassMetabolite aa : aaMmol_gMacromolecule_Content.keySet()) {
+				
+				double stoichiometry = aaMmol_gMacromolecule_Content.get(aa) * proteinCellContent;
+				aaMmol_gDW_Content.put(aa, stoichiometry);
+			}
 
 			if(exportFilePath != null) {
 
@@ -303,7 +331,7 @@ public class EstimateBiomassContents {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<BiomassMetabolite, Double> processProteinsExpressionData (String aaSequencesFilePath, Map<String, BiomassMetabolite> biomassMetabolites, String expressionDataFilePath, 
+	public static Map<BiomassMetabolite, Double> processProteinsExpressionData(String aaSequencesFilePath, Map<String, BiomassMetabolite> biomassMetabolites, String expressionDataFilePath, 
 			String separator) throws Exception {
 
 		File aaSequencesFile= new File (aaSequencesFilePath);

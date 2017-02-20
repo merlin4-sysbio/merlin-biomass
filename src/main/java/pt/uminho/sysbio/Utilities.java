@@ -82,10 +82,13 @@ public class Utilities {
 					map.put(data[0], bm);
 				}
 			}
+			
+			System.out.println(map);
 
 			buf.close();
 
-		}catch(Exception e) {
+		}
+		catch(Exception e) {
 
 			e.printStackTrace();
 		}
@@ -110,7 +113,7 @@ public class Utilities {
 			else 
 				products = products.concat((-entityComposition.get(monomer))+" ").concat(monomer.getName()).concat(" + ");
 		}
-
+		
 		reactants = reactants.substring(0, reactants.length()-3);
 		products = products.substring(0, products.length()-3);
 
