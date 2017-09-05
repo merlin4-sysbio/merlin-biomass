@@ -80,7 +80,7 @@ THF	T	C00101	cofactor
 FMN	M	C00061	cofactor
 FAD	F	C00016	cofactor
 SAM	S	C00019	cofactor
-Pyridoxal	P phosphate	C00018	cofactor
+Pyridoxal phosphate	P	C00018	cofactor
 thiamine	H	C00378	cofactor
 ubiquinone	U	C00399	cofactor
 Glutathione	G	C00051	cofactor
