@@ -83,8 +83,6 @@ public class Utilities {
 				}
 			}
 			
-			System.out.println(map);
-
 			buf.close();
 
 		}

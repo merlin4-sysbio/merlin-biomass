@@ -237,8 +237,6 @@ public class EstimateBiomassContents {
 				}
 			}
 			
-			//System.out.println("averageProteinMW "+averageProteinMW);
-
 			//add water to equation
 			aaG_MolMacromolecule.put(h2o, -h2o.getMolecularWeight());
 			//add macromolecule to list
