@@ -7,6 +7,8 @@ import java.util.Map;
 
 public class Utilities {
 
+	private static final String BIOMASS_IDENTIFIERS = "/biomassIdentifiers.txt";
+
 	/**
 	 * Merge RNA maps.
 	 * 
@@ -70,7 +72,7 @@ public class Utilities {
 
 		try {
 
-			BufferedReader buf = new BufferedReader(new InputStreamReader(Utilities.class.getResourceAsStream("/biomassIdentifiers.txt")));
+			BufferedReader buf = new BufferedReader(new InputStreamReader(Utilities.class.getResourceAsStream(BIOMASS_IDENTIFIERS)));
 
 			String line;
 			while((line = buf.readLine()) != null) {
