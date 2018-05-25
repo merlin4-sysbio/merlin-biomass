@@ -1,4 +1,4 @@
-package pt.uminho.sysbio;
+package pt.uminho.ceb.biosystems.merlin;
 
 /**
  * @author Oscar Dias

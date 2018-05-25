@@ -1,4 +1,4 @@
-package pt.uminho.sysbio;
+package pt.uminho.ceb.biosystems.merlin;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
