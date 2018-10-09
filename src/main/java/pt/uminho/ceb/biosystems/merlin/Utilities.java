@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import pt.uminho.ceb.biosystems.merlin.Enumerators.MetabolicDataSource;
+
 public class Utilities {
 
 	private static final String BIOMASS_IDENTIFIERS = "/biomassIdentifiers.txt";
@@ -63,10 +65,11 @@ public class Utilities {
 	
 	/**
 	 * Build initial information for e-biomass.
+	 * @param source 
 	 * 
 	 * @return
 	 */
-	public static Map<String, BiomassMetabolite> getBiomassMetabolites () {
+	public static Map<String, BiomassMetabolite> getBiomassMetabolites (MetabolicDataSource source) {
 
 		Map<String, BiomassMetabolite> map = new HashMap<>();
 
@@ -80,7 +83,14 @@ public class Utilities {
 				if(!line.startsWith("#") && !line.trim().isEmpty()) {
 
 					String[] data = line.split("\t");
-					BiomassMetabolite bm = new BiomassMetabolite(data[1], data[2], data[0], data[3]);
+					
+					String metaboliteRefId;
+					if(source.equals(MetabolicDataSource.MODEL_SEED))
+						metaboliteRefId = data[3];
+					else
+						metaboliteRefId = data[2];
+					
+					BiomassMetabolite bm = new BiomassMetabolite(data[1], metaboliteRefId, data[0], data[4]);
 					map.put(data[0], bm);
 				}
 			}
