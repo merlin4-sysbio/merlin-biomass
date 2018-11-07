@@ -68,23 +68,25 @@ public class EstimateBiomassContents {
 			double averageNucleotideMW = 0;
 			//Remove water from polymerization
 			BiomassMetabolite ppi = biomassMetabolites.get("PPI");
+			double ppiMolContents = 0;
 
 			for(BiomassMetabolite nuc : nucGeneData.keySet()) {
-
+				
 				if(nucGeneData.get(nuc)>0) {
-
+					
 					//Remove ppi for polymerization
 					double nucMW = nuc.getMolecularWeight() - ppi.getMolecularWeight();
 
 					double nucMassContent = nucGeneData.get(nuc)*nucMW;
-
+					ppiMolContents += nucGeneData.get(nuc);
+					
 					nucG_MolMacromolecule.put(nuc, nucMassContent);
 					averageNucleotideMW+=nucMassContent;
 				}
 			}
-
+			
 			//add ppi to equation
-			nucG_MolMacromolecule.put(ppi, -ppi.getMolecularWeight());
+//			nucG_MolMacromolecule.put(ppi, -ppi.getMolecularWeight());
 
 			//add macromolecule to list
 			String name = "e-DNA";
@@ -100,10 +102,14 @@ public class EstimateBiomassContents {
 
 			for(BiomassMetabolite nuc : nucGG_Content.keySet())
 				nucMmol_gMacromolecule_Content.put(nuc, (nucGG_Content.get(nuc) * 1000)/nuc.getMolecularWeight());
+			
+			nucMmol_gMacromolecule_Content.put(ppi, -ppiMolContents*1000/averageNucleotideMW);
+			
 
 			for(BiomassMetabolite nuc : nucMmol_gMacromolecule_Content.keySet())
 				nucMmol_gDW_Content.put(nuc, (nucMmol_gMacromolecule_Content.get(nuc) * nucCellContent));
 
+			
 			if(exportFilePath != null) {
 
 				String out = "mol/mol\n";

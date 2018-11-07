@@ -1,4 +1,4 @@
-#metabolite	single letter code	KEGG ID	Group
+#metabolite	single letter code	KEGG ID	ModelSEED ID	Group
 L-Alanine	A	C00041	cpd00035	aa
 L-Cysteine	C	C00097	cpd00084	aa
 L-Aspartate	D	C00049	cpd00041	aa

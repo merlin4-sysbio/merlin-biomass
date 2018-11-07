@@ -110,7 +110,7 @@ public class Utilities {
 	 * @param entity
 	 * @return
 	 */
-	public static String getReactionEquation(Map<BiomassMetabolite, Double> entityComposition) {
+	public static String getReactionEquation(Map<BiomassMetabolite, Double> entityComposition, String macromolecule) {
 
 		String ret = "";
 
@@ -120,7 +120,9 @@ public class Utilities {
 
 			if(entityComposition.get(monomer)>=0)
 				reactants = reactants.concat(entityComposition.get(monomer)+" ").concat(monomer.getName()).concat(" + ");
-			else 
+			else if (monomer.getName().equalsIgnoreCase(macromolecule))
+				products = products.concat("1 ").concat(monomer.getName()).concat(" + ");
+			else
 				products = products.concat((-entityComposition.get(monomer))+" ").concat(monomer.getName()).concat(" + ");
 		}
 		
