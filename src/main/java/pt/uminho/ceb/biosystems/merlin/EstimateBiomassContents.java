@@ -68,24 +68,23 @@ public class EstimateBiomassContents {
 			double averageNucleotideMW = 0;
 			//Remove water from polymerization
 			BiomassMetabolite ppi = biomassMetabolites.get("PPI");
+			double ppiMassContents = 0;
 
 			for(BiomassMetabolite nuc : nucGeneData.keySet()) {
-
+				
 				if(nucGeneData.get(nuc)>0) {
-
+					
 					//Remove ppi for polymerization
 					double nucMW = nuc.getMolecularWeight() - ppi.getMolecularWeight();
 
 					double nucMassContent = nucGeneData.get(nuc)*nucMW;
-
+					ppiMassContents += nucGeneData.get(nuc)*ppi.getMolecularWeight();
+					
 					nucG_MolMacromolecule.put(nuc, nucMassContent);
 					averageNucleotideMW+=nucMassContent;
 				}
 			}
-
-			//add ppi to equation
-			nucG_MolMacromolecule.put(ppi, -ppi.getMolecularWeight());
-
+			
 			//add macromolecule to list
 			String name = "e-DNA";
 			if(rna)
@@ -94,19 +93,27 @@ public class EstimateBiomassContents {
 			eNuc.setMolecularWeight(averageNucleotideMW);
 			nucG_MolMacromolecule.put(eNuc, -averageNucleotideMW);
 
-
 			for(BiomassMetabolite nuc : nucG_MolMacromolecule.keySet())
 				nucGG_Content.put(nuc, nucG_MolMacromolecule.get(nuc)/averageNucleotideMW);
+			
 
 			for(BiomassMetabolite nuc : nucGG_Content.keySet())
-				nucMmol_gMacromolecule_Content.put(nuc, (nucGG_Content.get(nuc) * 1000)/nuc.getMolecularWeight());
+				nucMmol_gMacromolecule_Content.put(nuc, (nucGG_Content.get(nuc) * 1000)/(nuc.getMolecularWeight()-ppi.getMolecularWeight()));
+			
 
 			for(BiomassMetabolite nuc : nucMmol_gMacromolecule_Content.keySet())
 				nucMmol_gDW_Content.put(nuc, (nucMmol_gMacromolecule_Content.get(nuc) * nucCellContent));
+			
+			//add ppi to equation
+			nucG_MolMacromolecule.put(ppi, -ppiMassContents);
+			nucGG_Content.put(ppi, nucG_MolMacromolecule.get(ppi)/averageNucleotideMW);
+			nucMmol_gMacromolecule_Content.put(ppi, nucGG_Content.get(ppi)*1000/ppi.getMolecularWeight());
+			nucMmol_gDW_Content.put(ppi, (nucMmol_gMacromolecule_Content.get(ppi) * nucCellContent));
 
+					
 			if(exportFilePath != null) {
 
-				String out = "mol/mol\n";
+				String out = "g/mol\n";
 				out += MapUtils.prettyToString(nucG_MolMacromolecule);
 				out += "g/gMacromolecule\n";
 				out += MapUtils.prettyToString(nucGG_Content);
@@ -218,6 +225,8 @@ public class EstimateBiomassContents {
 			double averageProteinMW = 0;
 			//Remove water from polymerization
 			BiomassMetabolite h2o = biomassMetabolites.get("H2O");
+			
+			double h2oMassContents = 0;
 
 			for(BiomassMetabolite aa : aaMolMolContent.keySet()) {
 
@@ -231,14 +240,14 @@ public class EstimateBiomassContents {
 					//				logger.info("");
 					
 					double aaMassContent = aaMolMolContent.get(aa)*aaMW;
+					
+					h2oMassContents += aaMolMolContent.get(aa) * h2o.getMolecularWeight();
 
 					aaG_MolMacromolecule.put(aa, aaMassContent);
 					averageProteinMW+=aaMassContent;
 				}
 			}
 			
-			//add water to equation
-			aaG_MolMacromolecule.put(h2o, -h2o.getMolecularWeight());
 			//add macromolecule to list
 			BiomassMetabolite eProtein = new BiomassMetabolite("P", "", "e-Protein", MetaboliteGroups.OTHER+"");
 			eProtein.setMolecularWeight(averageProteinMW);
@@ -251,7 +260,7 @@ public class EstimateBiomassContents {
 				
 				boolean notAvailable = true;
 				
-				double stoichiometry = (aaGG_Content.get(aa) * 1000)/aa.getMolecularWeight();
+				double stoichiometry = (aaGG_Content.get(aa) * 1000)/(aa.getMolecularWeight()-h2o.getMolecularWeight());
 				//aaMmol_gMacromolecule_Content.put(aa, stoichiometry);
 				
 				for(BiomassMetabolite biomassMetabolite : biomassMetabolites.values()) {
@@ -278,6 +287,14 @@ public class EstimateBiomassContents {
 				double stoichiometry = aaMmol_gMacromolecule_Content.get(aa) * proteinCellContent;
 				aaMmol_gDW_Content.put(aa, stoichiometry);
 			}
+			
+			
+			//add water to equation
+			aaG_MolMacromolecule.put(h2o, -h2oMassContents);
+			aaGG_Content.put(h2o, aaG_MolMacromolecule.get(h2o)/averageProteinMW);
+			aaMmol_gMacromolecule_Content.put(h2o, aaGG_Content.get(h2o)*1000/h2o.getMolecularWeight());
+			aaMmol_gDW_Content.put(h2o, (aaMmol_gMacromolecule_Content.get(h2o) * proteinCellContent));
+		
 
 			if(exportFilePath != null) {
 

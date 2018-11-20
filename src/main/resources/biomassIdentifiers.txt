@@ -1,88 +1,89 @@
-#metabolite	single letter code	KEGG ID	Group
-L-Alanine	A	C00041	aa
-L-Cysteine	C	C00097	aa
-L-Aspartate	D	C00049	aa
-L-Glutamate	E	C00025	aa
-L-Phenylalanine	F	C00079	aa
-Glycine	G	C00037	aa
-L-Histidine	H	C00135	aa
-L-Isoleucine	I	C00407	aa
-L-Lysine	K	C00047	aa
-L-Leucine	L	C00123	aa
-L-Methionine	M	C00073	aa
-L-Asparagine	N	C00152	aa
-L-Proline	P	C00148	aa
-L-Glutamine	Q	C00064	aa
-L-Arginine	R	C00062	aa
-L-Serine	S	C00065	aa
-L-Threonine	T	C00188	aa
-L-Valine	V	C00183	aa
-L-Tryptophan	W	C00078	aa
-L-Tyrosine	Y	C00082	aa
-L-Alanyl-tRNA	Ar	C00886	aa
-tRNA(ala)	Ap	C01635	aa
-L-Cysteinyl-tRNA(Cys)	Cr	C03125	aa
-tRNA(Cys)	Cp	C01639	aa
-L-Aspartyl-tRNA(Asp)	Dr	C02984	aa
-tRNA(Asp)	Dp	C01638	aa
-L-Glutamyl-tRNA(Glu)	Er	C02987	aa
-tRNA(Glu)	Ep	C01641	aa
-L-Phenylalanyl-tRNA(Phe)	Fr	C03511	aa
-tRNA(Phe)	Fp	C01648	aa
-Glycyl-tRNA(Gly)	Gr	C02412	aa
-tRNA(Gly)	Gp	C01642	aa
-L-Histidyl-tRNA(His)	Hr	C02988	aa
-tRNA(His)	Hp	C01643	aa
-L-Isoleucyl-tRNA(Ile)	Ir	C03127	aa
-tRNA(Ile)	Ip	C01644	aa
-L-Lysyl-tRNA	Kr	C01931	aa
-tRNA(Lys)	Kp	C01646	aa
-L-Leucyl-tRNA	Lr	C02047	aa
-tRNA(Leu)	Lp	C01645	aa
-L-Methionyl-tRNA	Mr	C02430	aa
-tRNA(Met)	Mp	C01647	aa
-L-Asparaginyl-tRNA(Asn)	Nr	C03402	aa
-tRNA(Asn)	Np	C01637	aa
-L-Prolyl-tRNA(Pro)	Pr	C02702	aa
-tRNA(Pro)	Pp	C01649	aa
-Glutaminyl-tRNA	Qr	C02282	aa
-tRNA(Gln)	Qp	C01640	aa
-L-Arginyl-tRNA(Arg)	Rr	C02163	aa
-tRNA(Arg)	Rp	C01636	aa
-L-Seryl-tRNA(Ser)	Sr	C02553	aa
-tRNA(Ser)	Sp	C01650	aa
-L-Threonyl-tRNA(Thr)	Tr	C02992	aa
-tRNA(Thr)	Tp	C01651	aa
-L-Valyl-tRNA(Val)	Vr	C02554	aa
-tRNA(Val)	Vp	C01653	aa
-L-Tryptophanyl-tRNA(Trp)	Wr	C03512	aa
-tRNA(Trp)	Wp	C01652	aa
-L-Tyrosyl-tRNA(Tyr)	Yr	C02839	aa
-tRNA(Tyr)	Yp	C00787	aa
+#metabolite	single letter code	KEGG ID	ModelSEED ID	Group
+L-Alanine	A	C00041	cpd00035	aa
+L-Cysteine	C	C00097	cpd00084	aa
+L-Aspartate	D	C00049	cpd00041	aa
+L-Glutamate	E	C00025	cpd00023	aa
+L-Phenylalanine	F	C00079	cpd00066	aa
+Glycine	G	C00037	cpd00033	aa
+L-Histidine	H	C00135	cpd00119	aa
+L-Isoleucine	I	C00407	cpd00322	aa
+L-Lysine	K	C00047	cpd00039	aa
+L-Leucine	L	C00123	cpd00107	aa
+L-Methionine	M	C00073	cpd00060	aa
+L-Asparagine	N	C00152	cpd00132	aa
+L-Proline	P	C00148	cpd00129	aa
+L-Glutamine	Q	C00064	cpd00053	aa
+L-Arginine	R	C00062	cpd00051	aa
+L-Serine	S	C00065	cpd00054	aa
+L-Threonine	T	C00188	cpd00161	aa
+L-Valine	V	C00183	cpd00156	aa
+L-Tryptophan	W	C00078	cpd00065	aa
+L-Tyrosine	Y	C00082	cpd00069	aa
+L-Alanyl-tRNA	Ar	C00886	cpd11770	aa
+tRNA(ala)	Ap	C01635	cpd11906	aa
+L-Cysteinyl-tRNA(Cys)	Cr	C03125	cpd12255	aa
+tRNA(Cys)	Cp	C01639	cpd11910	aa
+L-Aspartyl-tRNA(Asp)	Dr	C02984	cpd12226	aa
+tRNA(Asp)	Dp	C01638	cpd11909	aa
+L-Glutamyl-tRNA(Glu)	Er	C02987	cpd12227	aa
+tRNA(Glu)	Ep	C01641	cpd11912	aa
+L-Phenylalanyl-tRNA(Phe)	Fr	C03511	cpd12335	aa
+tRNA(Phe)	Fp	C01648	cpd11919	aa
+Glycyl-tRNA(Gly)	Gr	C02412	cpd12100	aa
+tRNA(Gly)	Gp	C01642	cpd11913	aa
+L-Histidyl-tRNA(His)	Hr	C02988	cpd12228	aa
+tRNA(His)	Hp	C01643	cpd11914	aa
+L-Isoleucyl-tRNA(Ile)	Ir	C03127	cpd12256	aa
+tRNA(Ile)	Ip	C01644	cpd11915	aa
+L-Lysyl-tRNA	Kr	C01931	cpd01326	aa
+tRNA(Lys)	Kp	C01646	cpd11917	aa
+L-Leucyl-tRNA	Lr	C02047	cpd12003	aa
+tRNA(Leu)	Lp	C01645	cpd11916	aa
+L-Methionyl-tRNA	Mr	C02430	cpd12105	aa
+tRNA(Met)	Mp	C01647	cpd11918	aa
+L-Asparaginyl-tRNA(Asn)	Nr	C03402	cpd16182	aa
+tRNA(Asn)	Np	C01637	cpd11908	aa
+L-Prolyl-tRNA(Pro)	Pr	C02702	cpd12164	aa
+tRNA(Pro)	Pp	C01649	cpd11920	aa
+Glutaminyl-tRNA	Qr	C02282	cpd12060	aa
+tRNA(Gln)	Qp	C01640	cpd11911	aa
+L-Arginyl-tRNA(Arg)	Rr	C02163	cpd12036	aa
+tRNA(Arg)	Rp	C01636	cpd11907	aa
+L-Seryl-tRNA(Ser)	Sr	C02553	cpd12132	aa
+tRNA(Ser)	Sp	C01650	cpd11921	aa
+L-Threonyl-tRNA(Thr)	Tr	C02992	cpd12229	aa
+tRNA(Thr)	Tp	C01651	cpd11922	aa
+L-Valyl-tRNA(Val)	Vr	C02554	cpd12133	aa
+tRNA(Val)	Vp	C01653	cpd11924	aa
+L-Tryptophanyl-tRNA(Trp)	Wr	C03512	cpd12336	aa
+tRNA(Trp)	Wp	C01652	cpd11923	aa
+L-Tyrosyl-tRNA(Tyr)	Yr	C02839	cpd12194	aa
+tRNA(Tyr)	Yp	C00787	cpd11751	aa
+				
+UTP	U	C00075	cpd00062	rna
+CTP	C	C00063	cpd00052	rna
+ATP	A	C00002	cpd00002	rna
+GTP	G	C00044	cpd00038	rna
+				
+dTTP	T	C00459	cpd00357	dna
+dCTP	C	C00458	cpd00356	dna
+dATP	A	C00131	cpd00115	dna
+dGTP	G	C00286	cpd00241	dna
+				
+H2O	H	C00001	cpd00001	other
+PPI	P	C00013	cpd00012	other
+				
+NAD	N	C00003	cpd00003	cofactor
+NADP	D	C00005	cpd00006	cofactor
+CoA	C	C00010	cpd00010	cofactor
+THF	T	C00101	cpd00087	cofactor
+FMN	M	C00061	cpd00050	cofactor
+FAD	F	C00016	cpd00015	cofactor
+SAM	S	C00019	cpd00017	cofactor
+Pyridoxal phosphate	P	C00018	cpd00016	cofactor
+thiamine	H	C00378	cpd00305	cofactor
+ubiquinone	U	C00399	cpd11669	cofactor
+Glutathione	G	C00051	cpd00042	cofactor
+Riboflavin	R	C00255	cpd00220	cofactor
+heme	E	C00032	cpd00028	cofactor
 
-UTP	U	C00075	rna
-CTP	C	C00063	rna
-ATP	A	C00002	rna
-GTP	G	C00044	rna
-
-dTTP	T	C00459	dna
-dCTP	C	C00458	dna
-dATP	A	C00131	dna
-dGTP	G	C00286	dna
-
-H2O	H	C00001	other
-PPI	P	C00013	other
-
-NAD	N	C00003	cofactor
-NADP	D	C00005	cofactor
-CoA	C	C00010	cofactor
-THF	T	C00101	cofactor
-FMN	M	C00061	cofactor
-FAD	F	C00016	cofactor
-SAM	S	C00019	cofactor
-Pyridoxal phosphate	P	C00018	cofactor
-thiamine	H	C00378	cofactor
-ubiquinone	U	C00399	cofactor
-Glutathione	G	C00051	cofactor
-Riboflavin	R	C00255	cofactor
-heme	E	C00032	cofactor
