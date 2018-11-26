@@ -223,9 +223,9 @@ public class EstimateBiomassContents {
 			double averageProteinMW = 0;
 			//Remove water from polymerization
 			BiomassMetabolite h2o = biomassMetabolites.get("H2O");
-
-			double h2oMassContents = 0;
 			
+			double h2oMassContents = 0;
+
 			for(BiomassMetabolite aa : aaMolMolContent.keySet()) {
 
 				if(aaMolMolContent.get(aa)>0) {
@@ -245,7 +245,6 @@ public class EstimateBiomassContents {
 					averageProteinMW+=aaMassContent;
 				}
 			}
-			
 			
 			//add macromolecule to list
 			BiomassMetabolite eProtein = new BiomassMetabolite("P", "", "e-Protein", MetaboliteGroups.OTHER+"");
