@@ -10,12 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.biojava.nbio.core.sequence.DNASequence;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.RNASequence;
 import org.biojava.nbio.core.sequence.compound.AminoAcidCompound;
 import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
-import org.biojava.nbio.core.sequence.io.FastaReaderHelper;
 import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +35,7 @@ public class EstimateBiomassContents {
 	/**
 	 * Get nucleotides relative abundance.
 	 * 
-	 * @param nucleotideSequencesFilePath
+	 * @param nucleotideSequences
 	 * @param nucCellContent
 	 * @param useHydratedMW
 	 * @param retType
@@ -47,12 +45,12 @@ public class EstimateBiomassContents {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<BiomassMetabolite, Double> getNucleotides_RelativeAbundance(String nucleotideSequencesFilePath, double nucCellContent, boolean useHydratedMW, ReturnType retType, String exportFilePath,
+	public static Map<BiomassMetabolite, Double> getNucleotides_RelativeAbundance(Map<String,AbstractSequence<NucleotideCompound>> nucleotideSequences, double nucCellContent, boolean useHydratedMW, ReturnType retType, String exportFilePath,
 			Map<String, BiomassMetabolite> biomassMetabolites, boolean rna) throws Exception {
 
 		Map<BiomassMetabolite, Double> nucGeneData = null, nucG_MolMacromolecule = new HashMap<>(), nucGG_Content = new HashMap<>(), nucMmol_gMacromolecule_Content = new HashMap<>(), nucMmol_gDW_Content = new HashMap<>();
 
-		if(nucleotideSequencesFilePath == null) {
+		if(nucleotideSequences == null || nucleotideSequences.isEmpty()) {
 
 			String name = "e-DNA";
 			if(rna)
@@ -63,12 +61,12 @@ public class EstimateBiomassContents {
 		}
 		else {
 
-			nucGeneData = EstimateBiomassContents.processNucleotides(nucleotideSequencesFilePath, biomassMetabolites, rna);
+			nucGeneData = EstimateBiomassContents.processNucleotides(nucleotideSequences, biomassMetabolites, rna);
 
 			double averageNucleotideMW = 0;
 			//Remove water from polymerization
 			BiomassMetabolite ppi = biomassMetabolites.get("PPI");
-			double ppiMolContents = 0;
+			double ppiMassContents = 0;
 
 			for(BiomassMetabolite nuc : nucGeneData.keySet()) {
 				
@@ -78,16 +76,13 @@ public class EstimateBiomassContents {
 					double nucMW = nuc.getMolecularWeight() - ppi.getMolecularWeight();
 
 					double nucMassContent = nucGeneData.get(nuc)*nucMW;
-					ppiMolContents += nucGeneData.get(nuc);
+					ppiMassContents += nucGeneData.get(nuc)*ppi.getMolecularWeight();
 					
 					nucG_MolMacromolecule.put(nuc, nucMassContent);
 					averageNucleotideMW+=nucMassContent;
 				}
 			}
 			
-			//add ppi to equation
-//			nucG_MolMacromolecule.put(ppi, -ppi.getMolecularWeight());
-
 			//add macromolecule to list
 			String name = "e-DNA";
 			if(rna)
@@ -96,23 +91,27 @@ public class EstimateBiomassContents {
 			eNuc.setMolecularWeight(averageNucleotideMW);
 			nucG_MolMacromolecule.put(eNuc, -averageNucleotideMW);
 
-
 			for(BiomassMetabolite nuc : nucG_MolMacromolecule.keySet())
 				nucGG_Content.put(nuc, nucG_MolMacromolecule.get(nuc)/averageNucleotideMW);
+			
 
 			for(BiomassMetabolite nuc : nucGG_Content.keySet())
-				nucMmol_gMacromolecule_Content.put(nuc, (nucGG_Content.get(nuc) * 1000)/nuc.getMolecularWeight());
-			
-			nucMmol_gMacromolecule_Content.put(ppi, -ppiMolContents*1000/averageNucleotideMW);
+				nucMmol_gMacromolecule_Content.put(nuc, (nucGG_Content.get(nuc) * 1000)/(nuc.getMolecularWeight()-ppi.getMolecularWeight()));
 			
 
 			for(BiomassMetabolite nuc : nucMmol_gMacromolecule_Content.keySet())
 				nucMmol_gDW_Content.put(nuc, (nucMmol_gMacromolecule_Content.get(nuc) * nucCellContent));
-
 			
+			//add ppi to equation
+			nucG_MolMacromolecule.put(ppi, -ppiMassContents);
+			nucGG_Content.put(ppi, nucG_MolMacromolecule.get(ppi)/averageNucleotideMW);
+			nucMmol_gMacromolecule_Content.put(ppi, nucGG_Content.get(ppi)*1000/ppi.getMolecularWeight());
+			nucMmol_gDW_Content.put(ppi, (nucMmol_gMacromolecule_Content.get(ppi) * nucCellContent));
+
+					
 			if(exportFilePath != null) {
 
-				String out = "mol/mol\n";
+				String out = "g/mol\n";
 				out += MapUtils.prettyToString(nucG_MolMacromolecule);
 				out += "g/gMacromolecule\n";
 				out += MapUtils.prettyToString(nucGG_Content);
@@ -140,26 +139,26 @@ public class EstimateBiomassContents {
 	/**
 	 * Process Nucletide.
 	 * 
-	 * @param nucleotideSequencesFilePath
+	 * @param nucleotideSequences
 	 * @param rna 
 	 * @return
 	 * @throws Exception 
 	 */
-	public static Map<BiomassMetabolite, Double>  processNucleotides(String nucleotideSequencesFilePath, Map<String, BiomassMetabolite> biomassMetabolites, boolean rna) throws Exception {
+	public static Map<BiomassMetabolite, Double>  processNucleotides(Map<String,AbstractSequence<NucleotideCompound>> nucleotideSequences, Map<String, BiomassMetabolite> biomassMetabolites, boolean rna) throws Exception {
 
-		File file = new File (nucleotideSequencesFilePath);
+//		File file = new File (nucleotideSequences);
 
 		Map <BiomassMetabolite, Double> nucBaseFrequencyMap = new HashMap<>();
 
-		Map <String, DNASequence> sequencesDNA = FastaReaderHelper.readFastaDNASequence(file);
-
+//		Map <String, DNASequence> sequencesDNA = FastaReaderHelper.readFastaDNASequence(file);
+		
 		MetaboliteGroups metaboliteGroup = MetaboliteGroups.DNA;
 		if(rna)
 			metaboliteGroup = MetaboliteGroups.RNA;
 
-		for(String sequence : sequencesDNA.keySet()) {
+		for(String sequence : nucleotideSequences.keySet()) {
 
-			AbstractSequence<NucleotideCompound> nucSequence = sequencesDNA.get(sequence);
+			AbstractSequence<NucleotideCompound> nucSequence = nucleotideSequences.get(sequence);
 			if(rna)
 				nucSequence = new RNASequence(nucSequence.getSequenceAsString().replaceAll("T", "U"));
 
@@ -191,7 +190,7 @@ public class EstimateBiomassContents {
 	/**
 	 * Get proteins relative abundance.
 	 * 
-	 * @param aaSequencesFilePath
+	 * @param aaSequences
 	 * @param proteinCellContent
 	 * @param useHydratedMW
 	 * @param retType
@@ -202,13 +201,13 @@ public class EstimateBiomassContents {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<BiomassMetabolite, Double> getProteinsRelativeAbundance(String aaSequencesFilePath, double proteinCellContent, boolean useHydratedMW, ReturnType retType, 
+	public static Map<BiomassMetabolite, Double> getProteinsRelativeAbundance(Map<String, ProteinSequence> aaSequences, double proteinCellContent, boolean useHydratedMW, ReturnType retType, 
 			String exportFilePath, Map<String, BiomassMetabolite> biomassMetabolites, String geneData, String separator) throws Exception {
 
 		Map<BiomassMetabolite, Double> aaMolMolContent = null, aaG_MolMacromolecule = new HashMap<>(), aaGG_Content = new HashMap<>(), 
 				aaMmol_gMacromolecule_Content = new HashMap<>(), aaMmol_gDW_Content = new HashMap<>();
 
-		if(aaSequencesFilePath == null) {
+		if(aaSequences == null || aaSequences.isEmpty()) {
 
 			BiomassMetabolite eProtein = new BiomassMetabolite("P", "", "e-Protein", MetaboliteGroups.OTHER+"");
 			aaMmol_gMacromolecule_Content.put(eProtein, -1.0);
@@ -217,14 +216,16 @@ public class EstimateBiomassContents {
 		else {
 
 			if (geneData==null || geneData.trim().isEmpty())
-				aaMolMolContent = processProteins(aaSequencesFilePath, biomassMetabolites);
+				aaMolMolContent = processProteins(aaSequences, biomassMetabolites);
 			else
-				aaMolMolContent = EstimateBiomassContents.processProteinsExpressionData(aaSequencesFilePath, biomassMetabolites, geneData, separator);
+				aaMolMolContent = EstimateBiomassContents.processProteinsExpressionData(aaSequences, biomassMetabolites, geneData, separator);
 
 			double averageProteinMW = 0;
 			//Remove water from polymerization
 			BiomassMetabolite h2o = biomassMetabolites.get("H2O");
 
+			double h2oMassContents = 0;
+			
 			for(BiomassMetabolite aa : aaMolMolContent.keySet()) {
 
 				if(aaMolMolContent.get(aa)>0) {
@@ -237,14 +238,15 @@ public class EstimateBiomassContents {
 					//				logger.info("");
 					
 					double aaMassContent = aaMolMolContent.get(aa)*aaMW;
+					
+					h2oMassContents += aaMolMolContent.get(aa) * h2o.getMolecularWeight();
 
 					aaG_MolMacromolecule.put(aa, aaMassContent);
 					averageProteinMW+=aaMassContent;
 				}
 			}
 			
-			//add water to equation
-			aaG_MolMacromolecule.put(h2o, -h2o.getMolecularWeight());
+			
 			//add macromolecule to list
 			BiomassMetabolite eProtein = new BiomassMetabolite("P", "", "e-Protein", MetaboliteGroups.OTHER+"");
 			eProtein.setMolecularWeight(averageProteinMW);
@@ -257,7 +259,7 @@ public class EstimateBiomassContents {
 				
 				boolean notAvailable = true;
 				
-				double stoichiometry = (aaGG_Content.get(aa) * 1000)/aa.getMolecularWeight();
+				double stoichiometry = (aaGG_Content.get(aa) * 1000)/(aa.getMolecularWeight()-h2o.getMolecularWeight());
 				//aaMmol_gMacromolecule_Content.put(aa, stoichiometry);
 				
 				for(BiomassMetabolite biomassMetabolite : biomassMetabolites.values()) {
@@ -284,6 +286,14 @@ public class EstimateBiomassContents {
 				double stoichiometry = aaMmol_gMacromolecule_Content.get(aa) * proteinCellContent;
 				aaMmol_gDW_Content.put(aa, stoichiometry);
 			}
+			
+			
+			//add water to equation
+			aaG_MolMacromolecule.put(h2o, -h2oMassContents);
+			aaGG_Content.put(h2o, aaG_MolMacromolecule.get(h2o)/averageProteinMW);
+			aaMmol_gMacromolecule_Content.put(h2o, aaGG_Content.get(h2o)*1000/h2o.getMolecularWeight());
+			aaMmol_gDW_Content.put(h2o, (aaMmol_gMacromolecule_Content.get(h2o) * proteinCellContent));
+		
 
 			if(exportFilePath != null) {
 
@@ -320,9 +330,9 @@ public class EstimateBiomassContents {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<BiomassMetabolite, Double> processProteins (String aaSequencesFilePath, Map<String, BiomassMetabolite> biomassMetabolites) throws Exception {
+	public static Map<BiomassMetabolite, Double> processProteins (Map<String, ProteinSequence> aaSequences, Map<String, BiomassMetabolite> biomassMetabolites) throws Exception {
 
-		return processProteinsExpressionData(aaSequencesFilePath, biomassMetabolites, null, null);
+		return processProteinsExpressionData(aaSequences, biomassMetabolites, null, null);
 	}
 
 	/**
@@ -335,12 +345,13 @@ public class EstimateBiomassContents {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<BiomassMetabolite, Double> processProteinsExpressionData(String aaSequencesFilePath, Map<String, BiomassMetabolite> biomassMetabolites, String expressionDataFilePath, 
+	public static Map<BiomassMetabolite, Double> processProteinsExpressionData(Map<String, ProteinSequence> sequences, Map<String, BiomassMetabolite> biomassMetabolites, String expressionDataFilePath, 
 			String separator) throws Exception {
 
-		File aaSequencesFile= new File (aaSequencesFilePath);
+//		File aaSequencesFile= new File (aaSequencesFilePath);
 
-		Map<String, ProteinSequence> sequences = FastaReaderHelper.readFastaProteinSequence(aaSequencesFile); 
+//		Map<String, ProteinSequence> sequences = FastaReaderHelper.readFastaProteinSequence(aaSequencesFile);
+		
 		Map<String, Double> geneExpressionData = new HashMap<>();
 
 		if(expressionDataFilePath!=null)
