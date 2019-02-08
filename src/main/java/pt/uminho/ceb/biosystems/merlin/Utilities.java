@@ -126,7 +126,7 @@ public class Utilities {
 				products = products.concat((-entityComposition.get(monomer))+" ").concat(monomer.getName()).concat(" + ");
 		}
 		
-		System.out.println(macromolecule +" re " + reactants);
+		System.out.println(macromolecule +" re " + reactants.length());
 		System.out.println(entityComposition);
 		reactants = reactants.substring(0, reactants.length()-3);
 		products = products.substring(0, products.length()-3);
