@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pt.uminho.ceb.biosystems.merlin.Enumerators.MetabolicDataSource;
+import pt.uminho.ceb.biosystems.merlin.core.datatypes.auxiliary.BiomassMetabolite;
 
 public class Utilities {
 
