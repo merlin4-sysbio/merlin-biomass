@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import pt.uminho.ceb.biosystems.merlin.Enumerators.MetaboliteGroups;
 import pt.uminho.ceb.biosystems.merlin.Enumerators.ReturnType;
-import pt.uminho.ceb.biosystems.merlin.core.datatypes.auxiliary.BiomassMetabolite;
+import pt.uminho.ceb.biosystems.merlin.datatypes.BiomassMetabolite;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.map.MapUtils;
 
 

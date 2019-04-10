@@ -24,6 +24,11 @@
 		</dependency>
 		<dependency>
 			<groupId>${pt.uminho.ceb.biosystems.merlin.groupId}</groupId>
+			<artifactId>merlin-services</artifactId>
+			<version>${pt.uminho.ceb.biosystems.merlin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pt.uminho.ceb.biosystems.merlin.groupId}</groupId>
 			<artifactId>merlin-core</artifactId>
 			<version>${pt.uminho.ceb.biosystems.merlin.version}</version>
 		</dependency>

@@ -2,13 +2,18 @@ package pt.uminho.ceb.biosystems.merlin;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import pt.uminho.ceb.biosystems.merlin.Enumerators.MetabolicDataSource;
-import pt.uminho.ceb.biosystems.merlin.core.datatypes.auxiliary.BiomassMetabolite;
+import pt.uminho.ceb.biosystems.merlin.database.connector.databaseAPI.ModelAPI;
+import pt.uminho.ceb.biosystems.merlin.datatypes.BiomassMetabolite;
+import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 
-public class Utilities {
+public class BiomassUtilities {
 
 	private static final String BIOMASS_IDENTIFIERS = "/biomassIdentifiers.txt";
 
@@ -76,7 +81,7 @@ public class Utilities {
 
 		try {
 
-			BufferedReader buf = new BufferedReader(new InputStreamReader(Utilities.class.getResourceAsStream(BIOMASS_IDENTIFIERS)));
+			BufferedReader buf = new BufferedReader(new InputStreamReader(BiomassUtilities.class.getResourceAsStream(BIOMASS_IDENTIFIERS)));
 
 			String line;
 			while((line = buf.readLine()) != null) {
@@ -152,5 +157,34 @@ public class Utilities {
 
 		return null;
 	}
+	
+	/**
+	 * Get information for e-biomass.
+	 * 
+	 * @param data
+	 * @param statment
+	 * @return
+	 */
+	public static Map<String, BiomassMetabolite> getModelInformationForBiomass(Map<String, BiomassMetabolite> data, Statement statment) {
+
+		List<String> keggs = new ArrayList<>();
+
+		for(String name : data.keySet())
+			keggs.add(data.get(name).getKeggId());
+		
+		Map<String, Pair<String, Double>> map= ModelAPI.getModelInformationForBiomass(keggs, statment);
+		
+		for(String name : data.keySet()) {
+			
+			String kegg = data.get(name).getKeggId();
+			
+			if(map.get(kegg)!=null){
+				data.get(name).setModelId(map.get(kegg).getA());
+				data.get(name).setMolecularWeight(map.get(kegg).getB());
+			}
+		}
+		return data;
+	}
+	
 
 }
