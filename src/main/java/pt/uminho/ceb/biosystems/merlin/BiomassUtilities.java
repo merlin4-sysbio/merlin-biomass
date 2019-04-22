@@ -11,7 +11,7 @@ import java.util.Map;
 import pt.uminho.ceb.biosystems.merlin.Enumerators.MetabolicDataSource;
 import pt.uminho.ceb.biosystems.merlin.database.connector.databaseAPI.ModelAPI;
 import pt.uminho.ceb.biosystems.merlin.datatypes.BiomassMetabolite;
-import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
+import pt.uminho.ceb.biosystems.merlin.utilities.Pair;
 
 public class BiomassUtilities {
 
