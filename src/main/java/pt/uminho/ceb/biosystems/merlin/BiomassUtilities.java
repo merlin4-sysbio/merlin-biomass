@@ -179,7 +179,7 @@ public class BiomassUtilities {
 			String kegg = data.get(name).getKeggId();
 			
 			if(map.get(kegg)!=null){
-				data.get(name).setModelId(map.get(kegg).getA());
+				data.get(name).setModelId( Integer.valueOf(map.get(kegg).getA()));
 				data.get(name).setMolecularWeight(map.get(kegg).getB());
 			}
 		}

@@ -11,7 +11,7 @@ public class BiomassMetabolite {
 	private String name;
 	private String group;
 	private double molecularWeight;
-	private String modelId;
+	private Integer modelId;
 	
 	
 	/**
@@ -113,7 +113,7 @@ public class BiomassMetabolite {
 	/**
 	 * @return the modelId
 	 */
-	public String getModelId() {
+	public Integer getModelId() {
 		return modelId;
 	}
 
@@ -121,7 +121,7 @@ public class BiomassMetabolite {
 	/**
 	 * @param modelId the modelId to set
 	 */
-	public void setModelId(String modelId) {
+	public void setModelId(Integer modelId) {
 		this.modelId = modelId;
 	}
 
