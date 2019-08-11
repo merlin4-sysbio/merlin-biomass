@@ -56,7 +56,7 @@ public class EstimateBiomassContents {
 			String name = "e-DNA";
 			if(rna)
 				name = "e-RNA";
-			BiomassMetabolite eNuc = new BiomassMetabolite("N", "", name, MetaboliteGroups.OTHER+"");
+			BiomassMetabolite eNuc = new BiomassMetabolite("N", name, name, MetaboliteGroups.OTHER+"");
 			nucMmol_gMacromolecule_Content.put(eNuc, -1.0);
 			return nucMmol_gMacromolecule_Content;
 		}
@@ -88,7 +88,7 @@ public class EstimateBiomassContents {
 			String name = "e-DNA";
 			if(rna)
 				name = "e-RNA";
-			BiomassMetabolite eNuc = new BiomassMetabolite("N", "", name, MetaboliteGroups.OTHER+"");
+			BiomassMetabolite eNuc = new BiomassMetabolite("N", name, name, MetaboliteGroups.OTHER+"");
 			eNuc.setMolecularWeight(averageNucleotideMW);
 			nucG_MolMacromolecule.put(eNuc, -averageNucleotideMW);
 
@@ -210,7 +210,7 @@ public class EstimateBiomassContents {
 
 		if(aaSequences == null || aaSequences.isEmpty()) {
 
-			BiomassMetabolite eProtein = new BiomassMetabolite("P", "", "e-Protein", MetaboliteGroups.OTHER+"");
+			BiomassMetabolite eProtein = new BiomassMetabolite("P", "e-Protein", "e-Protein", MetaboliteGroups.OTHER+"");
 			aaMmol_gMacromolecule_Content.put(eProtein, -1.0);
 			return aaMmol_gMacromolecule_Content;
 		}
@@ -248,7 +248,7 @@ public class EstimateBiomassContents {
 			}
 			
 			//add macromolecule to list
-			BiomassMetabolite eProtein = new BiomassMetabolite("P", "", "e-Protein", MetaboliteGroups.OTHER+"");
+			BiomassMetabolite eProtein = new BiomassMetabolite("P", "e-Protein", "e-Protein", MetaboliteGroups.OTHER+"");
 			eProtein.setMolecularWeight(averageProteinMW);
 			aaG_MolMacromolecule.put(eProtein, -1*averageProteinMW);
 
