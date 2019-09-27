@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 import pt.uminho.ceb.biosystems.merlin.Enumerators.MetabolicDataSource;
+import pt.uminho.ceb.biosystems.merlin.core.containers.model.MetaboliteContainer;
 import pt.uminho.ceb.biosystems.merlin.database.connector.databaseAPI.ModelAPI;
 import pt.uminho.ceb.biosystems.merlin.datatypes.BiomassMetabolite;
+import pt.uminho.ceb.biosystems.merlin.services.model.ModelMetabolitesServices;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 
 public class BiomassUtilities {
@@ -161,30 +163,29 @@ public class BiomassUtilities {
 	/**
 	 * Get information for e-biomass.
 	 * 
+	 * @param databaseName
 	 * @param data
-	 * @param statment
 	 * @return
+	 * @throws Exception 
 	 */
-	public static Map<String, BiomassMetabolite> getModelInformationForBiomass(Map<String, BiomassMetabolite> data, Statement statment) {
+	public static Map<String, BiomassMetabolite> getModelInformationForBiomass(String databaseName, Map<String, BiomassMetabolite> data) throws Exception {
 
 		List<String> keggs = new ArrayList<>();
 
 		for(String name : data.keySet())
 			keggs.add(data.get(name).getKeggId());
 		
-		Map<String, Pair<String, Double>> map= ModelAPI.getModelInformationForBiomass(keggs, statment);
-		
 		for(String name : data.keySet()) {
 			
 			String kegg = data.get(name).getKeggId();
 			
-			if(map.get(kegg)!=null){
-				data.get(name).setModelId( Integer.valueOf(map.get(kegg).getA()));
-				data.get(name).setMolecularWeight(map.get(kegg).getB());
+			MetaboliteContainer compound = ModelMetabolitesServices.getCompoundByExternalIdentifier(databaseName, kegg);
+			
+			if(compound != null){
+				data.get(name).setModelId(compound.getMetaboliteID());
+				data.get(name).setMolecularWeight(Double.valueOf(compound.getMolecular_weight()));
 			}
 		}
 		return data;
 	}
-	
-
 }
