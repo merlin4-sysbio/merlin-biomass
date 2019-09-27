@@ -136,11 +136,13 @@ public class BiomassUtilities {
 		
 		System.out.println(macromolecule +" re " + reactants.length());
 		System.out.println(entityComposition);
-		reactants = reactants.substring(0, reactants.length()-3);
-		products = products.substring(0, products.length()-3);
-
-		ret = reactants.concat(" => ").concat(products);
-
+		if(reactants.length()>0 && products.length()>0) {
+			reactants = reactants.substring(0, reactants.length()-3);
+			products = products.substring(0, products.length()-3);
+			ret = reactants.concat(" => ").concat(products);
+			return ret;
+		}
+		
 		return ret;
 	}
 
@@ -183,7 +185,8 @@ public class BiomassUtilities {
 			
 			if(compound != null){
 				data.get(name).setModelId(compound.getMetaboliteID());
-				data.get(name).setMolecularWeight(Double.valueOf(compound.getMolecular_weight()));
+				if(compound.getMolecular_weight() != null)
+					data.get(name).setMolecularWeight(Double.valueOf(compound.getMolecular_weight()));
 			}
 		}
 		return data;
