@@ -2,7 +2,6 @@ package pt.uminho.ceb.biosystems.merlin;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +9,8 @@ import java.util.Map;
 
 import pt.uminho.ceb.biosystems.merlin.Enumerators.MetabolicDataSource;
 import pt.uminho.ceb.biosystems.merlin.core.containers.model.MetaboliteContainer;
-import pt.uminho.ceb.biosystems.merlin.database.connector.databaseAPI.ModelAPI;
 import pt.uminho.ceb.biosystems.merlin.datatypes.BiomassMetabolite;
 import pt.uminho.ceb.biosystems.merlin.services.model.ModelMetabolitesServices;
-import pt.uminho.ceb.biosystems.mew.utilities.datastructures.pair.Pair;
 
 public class BiomassUtilities {
 
