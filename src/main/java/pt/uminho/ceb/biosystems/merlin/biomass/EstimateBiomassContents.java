@@ -1,4 +1,4 @@
-package pt.uminho.ceb.biosystems.merlin;
+package pt.uminho.ceb.biosystems.merlin.biomass;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,8 +18,8 @@ import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.uminho.ceb.biosystems.merlin.Enumerators.MetaboliteGroups;
-import pt.uminho.ceb.biosystems.merlin.Enumerators.ReturnType;
+import pt.uminho.ceb.biosystems.merlin.biomass.Enumerators.MetaboliteGroups;
+import pt.uminho.ceb.biosystems.merlin.biomass.Enumerators.ReturnType;
 import pt.uminho.ceb.biosystems.merlin.datatypes.BiomassMetabolite;
 import pt.uminho.ceb.biosystems.mew.utilities.datastructures.map.MapUtils;
 

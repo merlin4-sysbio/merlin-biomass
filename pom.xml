@@ -2,83 +2,37 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>pt.uminho.ceb.biosystems.merlin</groupId>
 	<artifactId>merlin-biomass</artifactId>
 	<version>4.0.2-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
+	<name>merlin-biomass</name>
+	<url>http://maven.apache.org</url>
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<slf4j.version>1.8.0-beta4</slf4j.version>
+		<maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
 		<pt.uminho.ceb.biosystems.merlin.version>4.0.2-SNAPSHOT</pt.uminho.ceb.biosystems.merlin.version>
 		<pt.uminho.ceb.biosystems.merlin.groupId>pt.uminho.ceb.biosystems.merlin</pt.uminho.ceb.biosystems.merlin.groupId>
 		<merlin.plugins.directory>${project.basedir}/../merlin-aibench/plugins</merlin.plugins.directory>
 		<slf4j.version>1.8.0-beta4</slf4j.version>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>${pt.uminho.ceb.biosystems.merlin.groupId}</groupId>
-			<artifactId>merlin-utilities</artifactId>
-			<version>${pt.uminho.ceb.biosystems.merlin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pt.uminho.ceb.biosystems.merlin.groupId}</groupId>
-			<artifactId>merlin-services</artifactId>
-			<version>${pt.uminho.ceb.biosystems.merlin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pt.uminho.ceb.biosystems.merlin.groupId}</groupId>
-			<artifactId>merlin-core</artifactId>
-			<version>${pt.uminho.ceb.biosystems.merlin.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.biojava</groupId>
-			<artifactId>biojava-core</artifactId>
-			<version>5.2.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-slf4j-impl</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.swt</groupId>
-			<artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
-			<version>4.3</version>
-		</dependency>
-	</dependencies>
-
 	<repositories>
 		<repository>
 			<id>nexus</id>
 			<name>Nexus BioSystems Server</name>
-			<url>https://www.bio.di.uminho.pt/nexus/content/groups/public/</url>
+			<url>https://nexus.bio.di.uminho.pt/content/groups/public/</url>
+		</repository>
+
+		<repository>
+			<id>sing-repository</id>
+			<name>SING repository</name>
+			<url>http://maven.sing-group.org/repository/maven/</url>
 		</repository>
 	</repositories>
 
@@ -91,44 +45,86 @@
 		      <configuration>
 		        <outputDirectory>${merlin.plugins.directory}</outputDirectory>
 		      </configuration>
-		    </plugin>		
+		    </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.17</version>
-				<configuration>
-					<skipTests>true</skipTests>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.6</version>
-				<extensions>true</extensions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.1.0</version>
 				<executions>
 					<execution>
-						<id>attach-sources</id>
+						<id>merlin-biomass</id>
+						<phase>compile</phase>
 						<goals>
-							<goal>jar</goal>
+							<goal>copy-resources</goal>
 						</goals>
+						<configuration>
+							<outputDirectory>../merlin-aibench/plugins_bin/merlin-biomass</outputDirectory>
+							<resources>
+								<resource>
+									<directory>target/classes</directory>
+									<filtering>false</filtering>
+								</resource>
+								<resource>
+									<directory>src/main/resources</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<inherited>false</inherited>
+						<configuration>
+							<stripVersion>true</stripVersion>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
 	</build>
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+		<dependency>
+			<groupId>${pt.uminho.ceb.biosystems.merlin.groupId}</groupId>
+			<artifactId>merlin-aibench</artifactId>
+			<version>${pt.uminho.ceb.biosystems.merlin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>pt.uminho.ceb.biosystems.mew</groupId>
+			<artifactId>mew-utilities</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<!-- </dependency> <groupId>org.sing_group</groupId> <artifactId>gc4s</artifactId> 
+			<version>1.2.2</version> </dependency> -->
+	</dependencies>
 
 	<distributionManagement>
 		<snapshotRepository>
@@ -140,4 +136,5 @@
 			<url>https://nexus.bio.di.uminho.pt/content/repositories/biosystems-releases</url>
 		</repository>
 	</distributionManagement>
+
 </project>

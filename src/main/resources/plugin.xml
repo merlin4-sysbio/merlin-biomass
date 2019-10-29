@@ -1,0 +1,28 @@
+<plugin start="true">
+	<uid>merlin-biomass</uid>
+	<name>pt.uminho.ceb.biosystems.merlin.biomass</name>
+	<version>4.0.0</version>
+
+	<dependencies>
+		<dependency uid="merlin" />
+	</dependencies>
+
+	<extensions>
+	
+		<extension uid="aibench.core"
+			name="aibench.core.operation-definition"
+			class="pt.uminho.ceb.biosystems.merlin.biomass.EBiomass">
+			<operation-description
+				name="e-biomass equation" path="30@model/40@create/"
+				uid="operations.EBiomass.ID" />
+		</extension>
+
+		<extension uid="aibench.workbench"
+			name="aibench.workbench.view">
+			<icon-operation operation="operations.EBiomass.ID"
+				icon="icons/Lifecycle/equation.png" />
+		</extension>
+		
+	</extensions>
+
+</plugin>

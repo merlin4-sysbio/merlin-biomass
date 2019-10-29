@@ -1,4 +1,4 @@
-package pt.uminho.ceb.biosystems.merlin;
+package pt.uminho.ceb.biosystems.merlin.biomass;
 
 /**
  * @author Oscar Dias
