@@ -182,7 +182,7 @@ public class BiomassUtilities {
 			
 			if(compound != null){
 				data.get(name).setModelId(compound.getMetaboliteID());
-				if(compound.getMolecular_weight() != null)
+				if(compound.getMolecular_weight() != null && !compound.getMolecular_weight().isEmpty())
 					data.get(name).setMolecularWeight(Double.valueOf(compound.getMolecular_weight()));
 			}
 		}
