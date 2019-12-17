@@ -73,6 +73,7 @@ public class EBiomass {
 	private Map<String,ProteinSequence> proteinSequences;
 	private Map<String,AbstractSequence<NucleotideCompound>> tRnaSequences, rRnaSequences, mRnaSequences, dnaSequences;
 	private boolean isCompartimentalisedModel;
+	private File reportFile;
 
 
 
@@ -139,8 +140,15 @@ public class EBiomass {
 		this.source = source;
 
 	}
+	
+	@Port(direction=Direction.INPUT, name="biomass report",description="biomass reports",validateMethod="",order=18)
+	public void setFileForReport(File reportFile) {
+		
+		this.reportFile = reportFile;
+		
+	}
 
-	@Port(direction=Direction.INPUT, name="biomass compartment",description="compartment for allocating the biomass equations.",defaultValue="auto",order=18, validateMethod="checkBiomassCompartment")
+	@Port(direction=Direction.INPUT, name="biomass compartment",description="compartment for allocating the biomass equations.",defaultValue="auto",order=19, validateMethod="checkBiomassCompartment")
 	public void setBiomassCompartment(String compartment) throws Exception {
 
 		this.isCompartimentalisedModel = ProjectServices.isCompartmentalisedModel(this.project.getName());
@@ -179,7 +187,7 @@ public class EBiomass {
 			//file paths
 			String preffix = "/out";
 			String exportFilePath = FileUtils.getWorkspaceTaxonomyFolderPath(this.project.getName(), this.project.getTaxonomyID()).concat("biomass");
-
+			System.out.println(exportFilePath);
 			//create dir
 			File f = new File(exportFilePath);
 			if(!f.exists())
@@ -256,6 +264,11 @@ public class EBiomass {
 
 				String entity = "e-Biomass";
 				String equation = BiomassUtilities.getReactionEquation(averageBiomass, entity);
+				
+				if (reportFile!=null) {
+					
+					
+				}
 
 
 				List<Integer> aux = ModelReactionsServices.getModelReactionLabelIdByName(this.project.getName(), entity, isCompartimentalisedModel);
