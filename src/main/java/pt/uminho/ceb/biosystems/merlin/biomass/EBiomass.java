@@ -2,7 +2,9 @@ package pt.uminho.ceb.biosystems.merlin.biomass;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +12,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
 import org.biojava.nbio.core.sequence.DNASequence;
 import org.biojava.nbio.core.sequence.ProteinSequence;
@@ -74,6 +80,9 @@ public class EBiomass {
 	private Map<String,AbstractSequence<NucleotideCompound>> tRnaSequences, rRnaSequences, mRnaSequences, dnaSequences;
 	private boolean isCompartimentalisedModel;
 	private File reportFile;
+	private boolean isFileForReport;
+	private XSSFWorkbook wb;
+	private FileOutputStream fileOut;
 
 
 
@@ -140,15 +149,20 @@ public class EBiomass {
 		this.source = source;
 
 	}
-	
-	@Port(direction=Direction.INPUT, name="biomass report",description="biomass reports",validateMethod="",order=18)
-	public void setFileForReport(File reportFile) {
-		
-		this.reportFile = reportFile;
-		
+	@Port(direction=Direction.INPUT, name="export biomass report?", advanced=true, defaultValue="false",order=18)
+	public void setIsFileForReport(boolean isFileForReport) {
+
+		this.isFileForReport = isFileForReport;
 	}
 
-	@Port(direction=Direction.INPUT, name="biomass compartment",description="compartment for allocating the biomass equations.",defaultValue="auto",order=19, validateMethod="checkBiomassCompartment")
+	@Port(direction=Direction.INPUT, name="export biomass report",description="biomass reports",advanced = true,defaultValue="file path", order=19)
+	public void setFileForReport(File reportFile) {
+
+		this.reportFile = reportFile;
+
+	}
+
+	@Port(direction=Direction.INPUT, name="biomass compartment",description="compartment for allocating the biomass equations.",defaultValue="auto",order=20, validateMethod="checkBiomassCompartment")
 	public void setBiomassCompartment(String compartment) throws Exception {
 
 		this.isCompartimentalisedModel = ProjectServices.isCompartmentalisedModel(this.project.getName());
@@ -219,6 +233,14 @@ public class EBiomass {
 			double upperBound = 999999;
 
 
+			if (this.isFileForReport) {
+
+				File outputFile = new File(reportFile.getAbsolutePath().concat("/biomass_report.xlsx"));
+
+				this.fileOut = new FileOutputStream(outputFile);
+				this.wb = new XSSFWorkbook();
+
+			}
 
 			//Biomass equation
 			{
@@ -264,11 +286,6 @@ public class EBiomass {
 
 				String entity = "e-Biomass";
 				String equation = BiomassUtilities.getReactionEquation(averageBiomass, entity);
-				
-				if (reportFile!=null) {
-					
-					
-				}
 
 
 				List<Integer> aux = ModelReactionsServices.getModelReactionLabelIdByName(this.project.getName(), entity, isCompartimentalisedModel);
@@ -293,6 +310,39 @@ public class EBiomass {
 
 					ModelReactionsServices.insertNewReaction_BiomassRelated(this.project.getName(), entity, equation, false, chains, compartments, sthoichiometry, true, pathway, this.compartment,
 							false, false, false, lowerBound, upperBound, SourceType.EBIOMASS, null, isCompartimentalisedModel);
+				}
+
+
+				if (this.isFileForReport) {
+
+					Sheet sheet = this.wb.createSheet(entity) ;
+					Row row = sheet.createRow(0);
+					row.createCell(0).setCellValue(entity);
+					sheet.createRow(1);
+					row = sheet.createRow(2);
+					String[] labels = new String[] { "Name", "Kegg ID",
+							"Group", "Molecular Weight", "Model ID", "Stoichiometry"
+					};
+
+					for (int i=0; i<labels.length; i++) {
+						row.createCell(i).setCellValue(labels[i]);
+					}
+					int i=0;
+					Object[] list = averageBiomass.keySet().toArray();
+					while (i<list.length)
+					{
+						row = sheet.createRow(i+3);
+						row.createCell(0).setCellValue(((BiomassMetabolite) list[i]).getName());
+						row.createCell(1).setCellValue(((BiomassMetabolite) list[i]).getKeggId());
+						row.createCell(2).setCellValue(((BiomassMetabolite) list[i]).getGroup());
+						row.createCell(3).setCellValue(((BiomassMetabolite) list[i]).getMolecularWeight());
+						row.createCell(4).setCellValue(((BiomassMetabolite) list[i]).getModelId());
+						row.createCell(5).setCellValue(averageBiomass.get(list[i]));
+						i++;
+					}
+
+
+
 				}
 			}
 
@@ -327,6 +377,38 @@ public class EBiomass {
 
 					ModelReactionsServices.insertNewReaction_BiomassRelated(this.project.getName(), entity, equation, false, chains, compartments, sthoichiometry, true, pathway, this.compartment,
 							false, false, false, lowerBound, upperBound, SourceType.EBIOMASS, null, isCompartimentalisedModel);
+				}
+
+				if (this.isFileForReport) {
+
+					Sheet sheet = this.wb.createSheet(entity) ;
+					Row row = sheet.createRow(0);
+					row.createCell(0).setCellValue(entity);
+					sheet.createRow(1);
+					row = sheet.createRow(2);
+					String[] labels = new String[] { "Name", "Kegg ID",
+							"Group", "Molecular Weight", "Model ID", "Stoichiometry"
+					};
+
+					for (int i=0; i<labels.length; i++) {
+						row.createCell(i).setCellValue(labels[i]);
+					}
+					int i=0;
+					Object[] list = averageCofactor.keySet().toArray();
+					while (i<list.length)
+					{
+						row = sheet.createRow(i+3);
+						row.createCell(0).setCellValue(((BiomassMetabolite) list[i]).getName());
+						row.createCell(1).setCellValue(((BiomassMetabolite) list[i]).getKeggId());
+						row.createCell(2).setCellValue(((BiomassMetabolite) list[i]).getGroup());
+						row.createCell(3).setCellValue(((BiomassMetabolite) list[i]).getMolecularWeight());
+						row.createCell(4).setCellValue(((BiomassMetabolite) list[i]).getModelId());
+						row.createCell(5).setCellValue(averageCofactor.get(list[i]));
+						i++;
+					}
+
+
+
 				}
 			}
 
@@ -366,6 +448,35 @@ public class EBiomass {
 					ModelReactionsServices.insertNewReaction_BiomassRelated(this.project.getName(), entity, equation, false, chains, compartments, metabolites, true, pathway, this.compartment,
 							false, false, false, lowerBound, upperBound, SourceType.EBIOMASS, null, isCompartimentalisedModel);
 				}
+				
+				if (this.isFileForReport) {
+
+					Sheet sheet = this.wb.createSheet(entity) ;
+					Row row = sheet.createRow(0);
+					row.createCell(0).setCellValue(entity);
+					sheet.createRow(1);
+					row = sheet.createRow(2);
+					String[] labels = new String[] { "Name", "Kegg ID",
+							"Group", "Molecular Weight", "Model ID", "Stoichiometry"
+					};
+
+					for (int i=0; i<labels.length; i++) {
+						row.createCell(i).setCellValue(labels[i]);
+					}
+					int i=0;
+					Object[] list = averageProtein.keySet().toArray();
+					while (i<list.length)
+					{
+						row = sheet.createRow(i+3);
+						row.createCell(0).setCellValue(((BiomassMetabolite) list[i]).getName());
+						row.createCell(1).setCellValue(((BiomassMetabolite) list[i]).getKeggId());
+						row.createCell(2).setCellValue(((BiomassMetabolite) list[i]).getGroup());
+						row.createCell(3).setCellValue(((BiomassMetabolite) list[i]).getMolecularWeight());
+						row.createCell(4).setCellValue(((BiomassMetabolite) list[i]).getModelId());
+						row.createCell(5).setCellValue(averageProtein.get(list[i]));
+						i++;
+					}
+				}
 			}
 
 			//DNA
@@ -404,6 +515,35 @@ public class EBiomass {
 					ModelReactionsServices.insertNewReaction_BiomassRelated(this.project.getName(), entity, equation, false, chains, compartments, metabolites, true, pathway, this.compartment,
 							false, false, false, lowerBound, upperBound, SourceType.EBIOMASS, null, isCompartimentalisedModel);
 				}
+				
+				if (this.isFileForReport) {
+
+					Sheet sheet = this.wb.createSheet(entity) ;
+					Row row = sheet.createRow(0);
+					row.createCell(0).setCellValue(entity);
+					sheet.createRow(1);
+					row = sheet.createRow(2);
+					String[] labels = new String[] { "Name", "Kegg ID",
+							"Group", "Molecular Weight", "Model ID", "Stoichiometry"
+					};
+
+					for (int i=0; i<labels.length; i++) {
+						row.createCell(i).setCellValue(labels[i]);
+					}
+					int i=0;
+					Object[] list = averageDNA.keySet().toArray();
+					while (i<list.length)
+					{
+						row = sheet.createRow(i+3);
+						row.createCell(0).setCellValue(((BiomassMetabolite) list[i]).getName());
+						row.createCell(1).setCellValue(((BiomassMetabolite) list[i]).getKeggId());
+						row.createCell(2).setCellValue(((BiomassMetabolite) list[i]).getGroup());
+						row.createCell(3).setCellValue(((BiomassMetabolite) list[i]).getMolecularWeight());
+						row.createCell(4).setCellValue(((BiomassMetabolite) list[i]).getModelId());
+						row.createCell(5).setCellValue(averageDNA.get(list[i]));
+						i++;
+					}
+				}
 			}
 
 			//RNA
@@ -439,7 +579,46 @@ public class EBiomass {
 					ModelReactionsServices.insertNewReaction_BiomassRelated(this.project.getName(), "e-RNA", equation, false, chains, compartments, metabolites, true, pathway, this.compartment,
 							false, false, false, lowerBound, upperBound, SourceType.EBIOMASS, null, isCompartimentalisedModel);
 				}
+				if (this.isFileForReport) {
+
+					Sheet sheet = this.wb.createSheet(entity) ;
+					Row row = sheet.createRow(0);
+					row.createCell(0).setCellValue(entity);
+					sheet.createRow(1);
+					row = sheet.createRow(2);
+					String[] labels = new String[] { "Name", "Kegg ID",
+							"Group", "Molecular Weight", "Model ID", "Stoichiometry"
+					};
+
+					for (int i=0; i<labels.length; i++) {
+						row.createCell(i).setCellValue(labels[i]);
+					}
+					int i=0;
+					Object[] list = averageRNA.keySet().toArray();
+					while (i<list.length)
+					{
+						row = sheet.createRow(i+3);
+						row.createCell(0).setCellValue(((BiomassMetabolite) list[i]).getName());
+						row.createCell(1).setCellValue(((BiomassMetabolite) list[i]).getKeggId());
+						row.createCell(2).setCellValue(((BiomassMetabolite) list[i]).getGroup());
+						row.createCell(3).setCellValue(((BiomassMetabolite) list[i]).getMolecularWeight());
+						row.createCell(4).setCellValue(((BiomassMetabolite) list[i]).getModelId());
+						row.createCell(5).setCellValue(averageRNA.get(list[i]));
+						i++;
+					}
+				}
 			}
+
+
+
+			if (this.isFileForReport) {
+				wb.write(fileOut);
+				fileOut.flush();
+				wb.close();
+				fileOut.close();
+				Workbench.getInstance().info("the report was exported successfully!");
+			}
+
 
 			MerlinUtils.updateAllViews(project.getName());
 			Workbench.getInstance().info("e-Biomass equations added to the model!");
