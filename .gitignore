@@ -12,3 +12,5 @@
 /target
 /test-bin
 /test_bin/
+/.apt_generated/
+/.apt_generated_tests/
